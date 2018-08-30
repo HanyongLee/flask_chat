@@ -4,6 +4,7 @@ import random
 #json으로 바꾸기 위해  라이브러리 추가
 import json
 import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
@@ -47,7 +48,33 @@ def message():
         img_bool=True
         url = "https://api.thecatapi.com/v1/images/search?mime_type=jpg"
         req = requests.get(url).json()
-        cat_url= req[0]['url']
+        return_msg = "나만 고양이 없어 :("
+        img_url= req[0]['url']
+    
+    elif msg == "영화":
+        img_bool = True
+        url = "https://movie.naver.com/movie/running/current.nhn"
+        req = requests.get(url).text
+        doc = BeautifulSoup(req, 'html.parser')
+        
+        title_tag = doc.select('dt.tit > a')
+        star_tag = doc.select('div.star_t1 > a > span.num') # bs4 문법은 중간에 a 하나 생략되도 인식 못함, 부등호도 띄어서 써줘야함
+        reserve_tag = doc.select('div.star_t1.b_star > span.num')  # class가 두개이면 공백에 .으로 연결시키면됨
+        img_tag = doc.select('div.thumb > a > img')
+        
+        movie_dic = {}
+        for i in range(0,10):
+            movie_dic[i] = {
+                "title": title_tag[i].text,
+                "star": star_tag[i].text,
+                "reserve": reserve_tag[i].text,
+                "img": img_tag[i].get('src') #bs4의 method -> 구글링 검색어 "bs4 get src or bs4 get attribute value"
+            }
+        
+        pick_movie = movie_dic[random.randrange(0,10)]
+        
+        return_msg = "%s/평점:%s/예매율:%s" %(pick_movie['title'], pick_movie['star'], pick_movie['reserve'])   #"영화 추천!!" + pick_movie['title']
+        img_url = pick_movie['img']
         
     else:
         return_msg = "현재 메뉴만 지원합니다 :)"
@@ -55,9 +82,9 @@ def message():
     if img_bool == True:
         json_return = { #json으로 바꿔서 응답해주기
             "message":{
-                "text" : "나만 고양이 없어 :(",
+                "text" : return_msg,
                 "photo": {
-                    "url":cat_url,
+                    "url":img_url,
                     "width":720,
                     "height":640
                 }
