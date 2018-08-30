@@ -75,9 +75,12 @@ def message():
         
         return_msg = "%s/평점:%s/예매율:%s" %(pick_movie['title'], pick_movie['star'], pick_movie['reserve'])   #"영화 추천!!" + pick_movie['title']
         img_url = pick_movie['img']
+    
+    elif msg == "기사":
+        img_bool = True
         
     else:
-        return_msg = "현재 메뉴만 지원합니다 :)"
+        return_msg = "현재 지원하지 않는 기능입니다. :)"
     
     if img_bool == True:
         json_return = { #json으로 바꿔서 응답해주기
