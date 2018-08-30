@@ -19,7 +19,7 @@ def keyboard():
     #keyboard 딕셔너리 생성
     keyboard = {
               "type" : "buttons",
-              "buttons" : ["메뉴", "로또", "고양이", "영화"]
+              "buttons" : ["메뉴", "로또", "고양이", "영화", "기사"]
             }
     
     #딕셔너리를 json으로 바꿔서 리턴 해주기 위한 코드
@@ -78,6 +78,28 @@ def message():
     
     elif msg == "기사":
         img_bool = True
+        url = "http://clomag.co.kr/search?query="
+        req = requests.get(url).text
+        doc = BeautifulSoup(req, 'html.parser')
+        
+        title_tag = doc.select('h4.title')
+        writer_tag = doc.select('span.writer > a')
+        day_tag = doc.select('span.date')
+        img_tag = doc.select('div.cover > a > img.img-responsive')
+        
+        article_dic = {}
+        for i in range(0,10):
+            article_dic[i] = {
+                "title" : title_tag[i].text,
+                "writer": writer_tag[i].text,
+                "day": day_tag[i].text,
+                "img": "https:" + img_tag[i].get('src')
+            }
+            
+        pick_article = article_dic[random.randrange(0,10)]
+        
+        return_msg = "%s\n%s\n%s" %(pick_article['title'], pick_article['writer'], pick_article['day'])
+        img_url = pick_article['img']
         
     else:
         return_msg = "현재 지원하지 않는 기능입니다. :)"
@@ -95,7 +117,7 @@ def message():
             "keyboard": {                   
                 #keyboard : 자동 응답 메뉴 호출, 메뉴마다 다른 형태 타고 타고 보여주기 위해서 keyboard 여러개 생성
                   "type" : "buttons",
-                  "buttons" : ["메뉴", "로또", "고양이", "영화"]
+                  "buttons" : ["메뉴", "로또", "고양이", "영화", "기사"]
                 }
         }
     else: 
@@ -106,7 +128,7 @@ def message():
         "keyboard": {                   
             #keyboard : 자동 응답 메뉴 호출, 메뉴마다 다른 형태 타고 타고 보여주기 위해서 keyboard 여러개 생성
               "type" : "buttons",
-              "buttons" : ["메뉴", "로또", "고양이", "영화"]
+              "buttons" : ["메뉴", "로또", "고양이", "영화", "기사"]
             }
         }
     
