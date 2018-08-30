@@ -86,6 +86,7 @@ def message():
         writer_tag = doc.select('span.writer > a')
         day_tag = doc.select('span.date')
         img_tag = doc.select('div.cover > a > img.img-responsive')
+        url_tag = doc.select('div.cover > a')
         
         article_dic = {}
         for i in range(0,10):
@@ -93,13 +94,15 @@ def message():
                 "title" : title_tag[i].text,
                 "writer": writer_tag[i].text,
                 "day": day_tag[i].text,
-                "img": "https:" + img_tag[i].get('src')
+                "img": "https:" + img_tag[i].get('src'),
+                "url": url_tag[i].get('href')
             }
             
         pick_article = article_dic[random.randrange(0,10)]
         
         return_msg = "%s\n%s\n%s" %(pick_article['title'], pick_article['writer'], pick_article['day'])
         img_url = pick_article['img']
+        page_url = pick_article['url']
         
     else:
         return_msg = "현재 지원하지 않는 기능입니다. :)"
@@ -112,8 +115,13 @@ def message():
                     "url":img_url,
                     "width":720,
                     "height":640
-                }
                 },
+                # # 해당 기사 링크
+                "message_button": {
+                "label": "기사를 보시겠어요?",
+                "url": page_url
+                }
+            },
             "keyboard": {                   
                 #keyboard : 자동 응답 메뉴 호출, 메뉴마다 다른 형태 타고 타고 보여주기 위해서 keyboard 여러개 생성
                   "type" : "buttons",
